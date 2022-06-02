@@ -16,12 +16,12 @@ class Pathfinder {
             for(let node of checkingNodes) {
                 if(this.maxDistance < node.distance)
                     continue;
-                for(let child of this.getPaths(node)) {
+                for(let child of this.getPaths(node.position)) {
                     if(!checkingNodes.includes(child))
                         checkingNodes.push(child);
                     if(!child.parentNodes.includes(node)) {
                         for(let path of node.parentLinks) 
-                            if(path.isClearPath(child)) {
+                            if(path.isClearPath(child.position)) {
                                 path.childLinks.push(child);
                                 child.parentLinks.push(path);
                             }
@@ -84,7 +84,7 @@ class PathNode {
                 this.parentLinks.push(this);
     }
 
-    isClearPath(path) {
+    isClearPath(position) {
         return false;
     }
 
@@ -101,4 +101,10 @@ class FollowPath {
         this.next = next;
         this.position = position;
     }
+}
+
+module.exports = {
+    FollowPath,
+    PathNode,
+    Pathfinder
 }
