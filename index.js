@@ -4,11 +4,13 @@ class Pathfinder {
 
     maxDistance;
 
-    startPathfinding(startPos, endPos) {
+    startPathfinding(startPos, endPos, minDistanceFromEnd = 1) {
+        this.positions
         this.endPos = endPos;
         this.maxDistance = NaN;
         let rootNode = new PathNode(startPos, 0, null, []);
         let checkNodes = [rootNode];
+        (this.positions = {})[startPos] = rootNode;
 
         while(checkNodes.length) {
             let checkingNodes = checkNodes;
@@ -16,20 +18,25 @@ class Pathfinder {
             for(let node of checkingNodes) {
                 if(this.maxDistance < node.distance)
                     continue;
-                for(let child of this.getPaths(node.position)) {
-                    if(!checkingNodes.includes(child))
-                        checkingNodes.push(child);
-                    if(!child.parentNodes.includes(node)) {
-                        for(let path of node.parentLinks) 
-                            if(path.isClearPath(child.position)) {
-                                path.childLinks.push(child);
-                                child.parentLinks.push(path);
-                            }
-                        child.parentNodes.push(node);
+                for(let child of this.getPaths(node)) {
+                    if(node.distance < child.distance) {
+                        if(!checkNodes.includes(child))
+                            checkNodes.push(child);
+                        if(child.distanceTo(endPos) <= minDistanceFromEnd)
+                            this.maxDistance = child.distance;
+                        if(!child.parentNodes.includes(node)) {
+                            for(let path of node.parentLinks) 
+                                if(path.isClearPath(child)) {
+                                    path.childLinks.push(child);
+                                    child.parentLinks.push(path);
+                                }
+                            child.parentNodes.push(node);
+                        }
                     }
                 }
             }
         }
+        console.log("moving on")
         let endNode = this.positions[endPos];
         if(!endNode)
             return;

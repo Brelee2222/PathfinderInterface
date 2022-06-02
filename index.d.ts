@@ -1,7 +1,7 @@
 declare export class Pathfinder {
-    position : {[index : any] : PathNode};
-    getPaths(position) : [PathNode];
-    startPathfinding(startPos : any, endPos : any) : FollowPath;
+    positions : {[index : any] : PathNode};
+    getPaths(node : PathNode) : [PathNode];
+    startPathfinding(startPos : any, endPos : any, minDistanceFromEnd : number) : FollowPath;
 }
 
 declare export class PathNode {
@@ -13,6 +13,11 @@ declare export class PathNode {
 
     constructor(position : any, distance : number, parentNode : PathNode, parentLinks : [PathNode]);
 
-    isClearPath(position : any) : boolean;
+    isClearPath(node : PathNode) : boolean;
     distanceTo(position : any) : number;
+}
+
+declare export class FollowPath {
+    next : FollowPath;
+    position : any;
 }
