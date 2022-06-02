@@ -5,7 +5,6 @@ class Pathfinder {
     maxDistance;
 
     startPathfinding(startPos, endPos, minDistanceFromEnd = 1) {
-        this.positions
         this.endPos = endPos;
         this.maxDistance = NaN;
         let rootNode = new PathNode(startPos, 0, null, []);
@@ -24,19 +23,24 @@ class Pathfinder {
                             checkNodes.push(child);
                         if(child.distanceTo(endPos) <= minDistanceFromEnd)
                             this.maxDistance = child.distance;
-                        if(!child.parentNodes.includes(node)) {
-                            for(let path of node.parentLinks) 
-                                if(path.isClearPath(child)) {
+                        let v = true;
+                        for(let path of node.parentLinks)
+                            if(!child.parentLinks.includes(path))
+                                if(child.isClearPath(path)) {
+                                    v = false;
                                     path.childLinks.push(child);
                                     child.parentLinks.push(path);
                                 }
-                            child.parentNodes.push(node);
+                        if(v) {
+                            node.childLinks.push(child);
+                            child.parentLinks.push(node);
                         }
+                        if(!child.parentNodes.includes(node))
+                            child.parentNodes.push(node);
                     }
                 }
             }
         }
-        console.log("moving on")
         let endNode = this.positions[endPos];
         if(!endNode)
             return;
@@ -47,11 +51,11 @@ class Pathfinder {
             for(let node of checkingNodes) {
                 for(let child of node.childLinks){
                     let distance = child.distanceTo(node.position) + node.distance;
-                    if(distance <= child.distance) {
+                    if(distance < child.distance) {
                         child.distance = distance;
                         child.parentNodes[0] = node;
-                        if(!checkingNodes.includes(child))
-                            checkingNodes.push(child);
+                        if(!checkNodes.includes(child))
+                            checkNodes.push(child);
                     }
                 }
             }
@@ -83,10 +87,10 @@ class PathNode {
                 this.parentLinks.push(parentLink);
                 parentLink.childLinks.push(this);
             }
-        if(!parentLinks.length)
+        if(!this.parentLinks.length)
             if(parentNode) {
                 this.parentLinks.push(parentNode);
-                parentNode.childLinks.push(this)
+                parentNode.childLinks.push(this);
             } else
                 this.parentLinks.push(this);
     }
