@@ -65,7 +65,7 @@ class Pathfinder {
         }
         let path = new FollowPath(undefined, endingPos.position);
         while(endingPos.parentNodes[0])
-            path = new FollowPath(path, (endNode = endNode.parentNodes[0]).position);
+            path = new FollowPath(path, (endingPos = endingPos.parentNodes[0]).position);
         return path;
     }
 
