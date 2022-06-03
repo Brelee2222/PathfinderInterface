@@ -9,6 +9,7 @@ class Pathfinder {
         this.maxDistance = NaN;
         let rootNode = new PathNode(startPos, 0, null, []);
         let checkNodes = [rootNode];
+        let endingPos;
         (this.positions = {})[startPos] = rootNode;
 
         while(checkNodes.length) {
@@ -21,8 +22,10 @@ class Pathfinder {
                     if(node.distance < child.distance) {
                         if(!checkNodes.includes(child))
                             checkNodes.push(child);
-                        if(child.distanceTo(endPos) <= minDistanceFromEnd)
+                        if(child.distanceTo(endPos) <= minDistanceFromEnd) {
+                            endingPos = child;
                             this.maxDistance = child.distance;
+                        }
                         let v = true;
                         for(let path of node.parentLinks)
                             if(!child.parentLinks.includes(path))
@@ -41,8 +44,8 @@ class Pathfinder {
                 }
             }
         }
-        let endNode = this.positions[endPos];
-        if(!endNode)
+
+        if(!endingPos)
             return;
         checkNodes = [rootNode];
         while(checkNodes.length) {
@@ -60,8 +63,8 @@ class Pathfinder {
                 }
             }
         }
-        let path = new FollowPath(undefined, endPos);
-        while(endNode.parentNodes[0])
+        let path = new FollowPath(undefined, endingPos.position);
+        while(endingPos.parentNodes[0])
             path = new FollowPath(path, (endNode = endNode.parentNodes[0]).position);
         return path;
     }
