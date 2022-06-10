@@ -20,6 +20,8 @@ class Pathfinder {
                     continue;
                 for(let child of this.getPaths(node)) {
                     if(node.distance < child.distance) {
+                        if(this.maxDistance < child.distance)
+                            continue;
                         if(!checkNodes.includes(child))
                             checkNodes.push(child);
                         if(child.distanceTo(endPos) <= minDistanceFromEnd) {
